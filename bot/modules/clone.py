@@ -1,7 +1,7 @@
+#!/usr/bin/env python3
 from asyncio import gather, sleep
 from json import loads
-from random import SystemRandom
-from string import ascii_letters, digits
+from secrets import token_urlsafe
 from aiofiles.os import path as aiopath
 from pyrogram.filters import command
 from pyrogram.handlers import MessageHandler
@@ -73,13 +73,14 @@ async def rcloneNode(client, message, link, dst_path, rcf, listener):
             await sendMessage(message, 'You should use same rclone.conf to clone between pathies!')
             await delete_links(message)
             return
+        dst_path = dst_path.lstrip('mrcc:')
     elif config_path != 'rclone.conf':
         await sendMessage(message, 'You should use same rclone.conf to clone between pathies!')
         await delete_links(message)
         return
 
     remote, src_path = link.split(':', 1)
-    src_path = src_path .strip('/')
+    src_path = src_path.strip('/')
 
     cmd = ['rclone', 'lsjson', '--fast-list', '--stat',
            '--no-modtime', '--config', config_path, f'{remote}:{src_path}']
@@ -104,7 +105,7 @@ async def rcloneNode(client, message, link, dst_path, rcf, listener):
     RCTransfer = RcloneTransferHelper(listener, name)
     LOGGER.info(
         f'Clone Started: Name: {name} - Source: {link} - Destination: {dst_path}')
-    gid = ''.join(SystemRandom().choices(ascii_letters + digits, k=12))
+    gid = token_urlsafe(12)
     async with download_dict_lock:
         download_dict[message.id] = RcloneStatus(
             RCTransfer, message, gid, 'cl', listener.extra_details)
@@ -177,12 +178,12 @@ async def gdcloneNode(message, link, listener):
         await listener.onDownloadStart()
         LOGGER.info(f'Clone Started: Name: {name} - Source: {link}')
         drive = GoogleDriveHelper(name, listener=listener)
-        if files <= 20:
+        if files <= 10:
             msg = await sendMessage(message, f"Cloning: <code>{link}</code>")
-            link, size, mime_type, files, folders, dir_id = await sync_to_async(drive.clone, link, listener.drive_id or config_dict['GDRIVE_ID'])
+            link, size, mime_type, files, folders = await sync_to_async(drive.clone, link, listener.drive_id)
             await deleteMessage(msg)
         else:
-            gid = ''.join(SystemRandom().choices(ascii_letters + digits, k=12))
+            gid = token_urlsafe(12)
             async with download_dict_lock:
                 download_dict[message.id] = GdriveStatus(
                     drive, size, message, gid, 'cl', listener.extra_details)

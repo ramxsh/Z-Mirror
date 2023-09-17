@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from asyncio import Event, sleep, wait_for, wrap_future
 from functools import partial
 from time import time
@@ -441,6 +442,8 @@ async def _ytdl(client, message, isLeech=False, sameDir=None, bulk=[]):
         if up != 'gd' and not is_rclone_path(up):
             await sendMessage(message, 'Wrong Rclone Upload Destination!')
             return
+    elif up.isdigit() or up.startswith('-'):
+        up = int(up)
 
     if up == 'rcl' and not isLeech:
         up = await RcloneList(client, message).get_rclone_path('rcu')
@@ -461,6 +464,9 @@ async def _ytdl(client, message, isLeech=False, sameDir=None, bulk=[]):
         yt_opt = opt.split('|')
         for ytopt in yt_opt:
             key, value = map(str.strip, ytopt.split(':', 1))
+            if key == 'format' and value.startswith('ba/b-'):
+                qual = value
+                continue
             if value.startswith('^'):
                 if '.' in value or value == '^inf':
                     value = float(value.split('^')[1])
@@ -489,10 +495,8 @@ async def _ytdl(client, message, isLeech=False, sameDir=None, bulk=[]):
     user_id = message.from_user.id
     if not select:
         user_dict = user_data.get(user_id, {})
-        if 'format' in options:
+        if not qual and 'format' in options:
             qual = options['format']
-        elif user_dict.get('yt_opt'):
-            qual = user_dict['yt_opt']
 
     if not qual:
         qual = await YtSelection(client, message).get_quality(result)

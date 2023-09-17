@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 YT_HELP_MESSAGE = """
 <b><u>Mirror</u></b>:
 <code>/{cmd}</code> link
@@ -91,6 +92,9 @@ drive_id must be folder id and index must be url else it will not accept
 
 <b><u>Direct Link Authorization</u></b>: -u or -username and -p or -password
 <code>/{cmd}</code> link -u your_username -p your_password
+
+<b>Direct link custom headers</b>: -h
+<code>/cmd</code> link -h Key: value Key1: value1
 
 <b><u>Zip/Unzip</u></b>: -z or -zip and -e or -uz or -unzip
 <code>/{cmd}</code> link -e password (extract password protected)
@@ -202,7 +206,7 @@ Send Gdrive|Gdot|Filepress|Filebee|Appdrive|Gdflix link or rclone path along wit
 drive_id must be folder id and index must be url else it will not accept
 
 <b>Rclone:</b>
-<code>/cmd</code> (rcl or rclone_path) -up (rcl or rclone_path) -rcf flagkey:flagvalue|flagkey|flagkey:flagvalue
+<code>/{cmd}</code> (rcl or rclone_path) -up (rcl or rclone_path) -rcf flagkey:flagvalue|flagkey|flagkey:flagvalue
 
 <b><u>Note</u></b>: If -up not specified then rclone destination will be the RCLONE_PATH from config.env
 
@@ -229,4 +233,14 @@ This command mainly for selection incase you decided to select files from alread
 But you can always use <code>/{mir}</code> with arg `-s` to select files before download start.
 
 <b>Powered By @Z_Mirror</b>
+"""
+
+PASSWORD_ERROR_MESSAGE = """
+<b>This link requires a password!</b>
+- Insert sign <b>::</b> after the link and write the password after the sign.
+
+<b>Example:</b> {}::love you
+
+Note: No spaces between the signs <b>::</b>
+For the password, you can use a space!
 """
