@@ -70,12 +70,12 @@ async def rcloneNode(client, message, link, dst_path, rcf, listener):
         return
     if dst_path.startswith('mrcc:'):
         if config_path != f'rclone/{message.from_user.id}.conf':
-            await sendMessage(message, 'You should use same rclone.conf to clone between pathies!')
+            await sendMessage(message, 'You should use same rclone.conf to clone between paths!')
             await delete_links(message)
             return
         dst_path = dst_path.lstrip('mrcc:')
     elif config_path != 'rclone.conf':
-        await sendMessage(message, 'You should use same rclone.conf to clone between pathies!')
+        await sendMessage(message, 'You should use same rclone.conf to clone between paths!')
         await delete_links(message)
         return
 
@@ -107,8 +107,7 @@ async def rcloneNode(client, message, link, dst_path, rcf, listener):
         f'Clone Started: Name: {name} - Source: {link} - Destination: {dst_path}')
     gid = token_urlsafe(12)
     async with download_dict_lock:
-        download_dict[message.id] = RcloneStatus(
-            RCTransfer, message, gid, 'cl', listener.extra_details)
+        download_dict[message.id] = RcloneStatus(RCTransfer, message, gid, 'cl', listener.extra_details)
     await sendStatusMessage(message)
     link, destination = await RCTransfer.clone(config_path, remote, src_path, dst_path, rcf, mime_type)
     if not link:
@@ -185,8 +184,7 @@ async def gdcloneNode(message, link, listener):
         else:
             gid = token_urlsafe(12)
             async with download_dict_lock:
-                download_dict[message.id] = GdriveStatus(
-                    drive, size, message, gid, 'cl', listener.extra_details)
+                download_dict[message.id] = GdriveStatus(drive, size, message, gid, 'cl', listener.extra_details)
             await sendStatusMessage(message)
             link, size, mime_type, files, folders = await sync_to_async(drive.clone, link, listener.drive_id)
         if not link:

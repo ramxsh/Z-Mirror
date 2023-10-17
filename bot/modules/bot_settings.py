@@ -122,13 +122,13 @@ async def load_config():
         MEGA_EMAIL = ''
         MEGA_PASSWORD = ''
 
-    UPTOBOX_TOKEN = environ.get('UPTOBOX_TOKEN', '')
-    if len(UPTOBOX_TOKEN) == 0:
-        UPTOBOX_TOKEN = ''
-
     FILELION_API = environ.get('FILELION_API', '')
     if len(FILELION_API) == 0:
         FILELION_API = ''
+
+    STREAMWISH_API = environ.get('STREAMWISH_API', '')
+    if len(STREAMWISH_API) == 0:
+        STREAMWISH_API = ''
 
     INDEX_URL = environ.get('INDEX_URL', '').rstrip("/")
     if len(INDEX_URL) == 0:
@@ -326,6 +326,9 @@ async def load_config():
     YTDLP_LIMIT = environ.get('YTDLP_LIMIT', '')
     YTDLP_LIMIT = '' if len(YTDLP_LIMIT) == 0 else float(YTDLP_LIMIT)
 
+    PLAYLIST_LIMIT = environ.get('PLAYLIST_LIMIT', '')
+    PLAYLIST_LIMIT = '' if len(PLAYLIST_LIMIT) == 0 else int(PLAYLIST_LIMIT)
+
     GDRIVE_LIMIT = environ.get('GDRIVE_LIMIT', '')
     GDRIVE_LIMIT = '' if len(GDRIVE_LIMIT) == 0 else float(GDRIVE_LIMIT)
 
@@ -506,6 +509,7 @@ async def load_config():
                         'STATUS_LIMIT': STATUS_LIMIT,
                         'STATUS_UPDATE_INTERVAL': STATUS_UPDATE_INTERVAL,
                         'STOP_DUPLICATE': STOP_DUPLICATE,
+                        'STREAMWISH_API': STREAMWISH_API,
                         'SUDO_USERS': SUDO_USERS,
                         'STORAGE_THRESHOLD': STORAGE_THRESHOLD,
                         'STOP_DUPLICATE_TASKS': STOP_DUPLICATE_TASKS,
@@ -517,13 +521,13 @@ async def load_config():
                         'TOKEN_TIMEOUT': TOKEN_TIMEOUT,
                         'UPSTREAM_BRANCH': UPSTREAM_BRANCH,
                         'UPSTREAM_REPO': UPSTREAM_REPO,
-                        'UPTOBOX_TOKEN': UPTOBOX_TOKEN,
                         'USER_MAX_TASKS': USER_MAX_TASKS,
                         'USER_DUMP': USER_DUMP,
                         'USER_SESSION_STRING': USER_SESSION_STRING,
                         'USE_SERVICE_ACCOUNTS': USE_SERVICE_ACCOUNTS,
                         'WEB_PINCODE': WEB_PINCODE,
                         'YTDLP_LIMIT': YTDLP_LIMIT,
+                        'PLAYLIST_LIMIT': PLAYLIST_LIMIT,
                         'YT_DLP_OPTIONS': YT_DLP_OPTIONS})
 
     if DATABASE_URL:
@@ -684,7 +688,7 @@ async def edit_variable(_, message, pre_message, key):
                 "drive_id": GDRIVE_ID, "index_link": value}
             categories_dict['Root'] = {
                 "drive_id": GDRIVE_ID, "index_link": value}
-    elif key not in ['SEARCH_LIMIT', 'STATUS_LIMIT'] and key.endswith(('_THRESHOLD', '_LIMIT')):
+    elif key not in ['SEARCH_LIMIT', 'STATUS_LIMIT', 'PLAYLIST_LIMIT'] and key.endswith(('_THRESHOLD', '_LIMIT')):
         value = float(value)
     elif value.isdigit() and key != 'FSUB_IDS':
         value = int(value)

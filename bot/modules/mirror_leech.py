@@ -268,7 +268,7 @@ async def _mirror_leech(client, message, isQbit=False, isLeech=False, sameDir=No
                 link = await sync_to_async(direct_link_generator, link)
                 if isinstance(link, tuple):
                     link, headers = link
-                if isinstance(link, str):
+                elif isinstance(link, str):
                     LOGGER.info(f"Generated link: {link}")
             except DirectDownloadLinkException as e:
                 e = str(e)
@@ -338,10 +338,11 @@ async def _mirror_leech(client, message, isQbit=False, isLeech=False, sameDir=No
             return
         await add_rclone_download(link, config_path, f'{path}/', name, listener)
     elif is_gdrive_link(link):
-        if not any([compress, extract, isLeech]):
-            gmsg = f"Use /{BotCommands.CloneCommand} to clone Google Drive file/folder\n\n"
-            gmsg += f"Use /{BotCommands.MirrorCommand[0]} {link} -zip to make zip of Google Drive folder\n\n"
-            gmsg += f"Use /{BotCommands.MirrorCommand[0]} {link} -unzip to extracts Google Drive archive folder/file"
+        if up == 'gd' and not any([compress, extract, isLeech]):
+            gmsg = f"Use <code>/{BotCommands.LeechCommand[0]} {link}</code> to leech Google Drive file/folder\n\n"
+            gmsg += f"Use <code>/{BotCommands.CloneCommand} {link}</code> to clone Google Drive file/folder\n\n"
+            gmsg += f"Use <code>/{BotCommands.MirrorCommand[0]} {link}</code> -zip to make zip of Google Drive folder\n\n"
+            gmsg += f"Use <code>/{BotCommands.MirrorCommand[0]} {link}</code> -unzip to extracts Google Drive archive folder/file"
             reply_message = await sendMessage(message, gmsg)
             await auto_delete_message(message, reply_message)
             await delete_links(message)
@@ -356,12 +357,8 @@ async def _mirror_leech(client, message, isQbit=False, isLeech=False, sameDir=No
         pssw = args['-p'] or args['-password']
         if ussr or pssw:
             auth = f"{ussr}:{pssw}"
-            auth = f"authorization: Basic {b64encode(auth.encode()).decode('ascii')}"
-        else:
-            auth = ''
-        if headers:
-            auth += f'{auth} {headers}'
-        await add_aria2c_download(link, path, listener, name, auth, ratio, seed_time)
+            headers += f" authorization: Basic {b64encode(auth.encode()).decode('ascii')}"
+        await add_aria2c_download(link, path, listener, name, headers, ratio, seed_time)
 
 
 async def mirror(client, message):
